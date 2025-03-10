@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доступ к камере</title>
+</head>
+<body>
+    <h1>Доступ к камере устройства</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="start">Начать съемку</button>
+    <button id="stop">Остановить съемку</button>
+
+    <script>
+        // Получение элемента video
+        const videoElement = document.getElementById('video');
+        const startButton = document.getElementById('start');
+        const stopButton = document.getElementById('stop');
+
+        // Запрашиваем доступ к камере
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = stream;
+                startButton.disabled = true;
+                stopButton.disabled = false;
+            } catch (err) {
+                console.error("Ошибка доступа к камере:", err);
+            }
+        }
+
+        // Останавливаем камеру
+        function stopCamera() {
+            const stream = videoElement.srcObject;
+            const tracks = stream.getTracks();
+
+            tracks.forEach(track => track.stop());
+            videoElement.srcObject = null;
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        }
+
+        // Привязываем события к кнопкам
+        startButton.addEventListener('click', startCamera);
+        stopButton.addEventListener('click', stopCamera);
+    </script>
+</body>
+</html>
